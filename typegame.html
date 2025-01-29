@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Typing Adventure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #43B54C;
+            background-image: 
+                linear-gradient(45deg, #3CA144 25%, transparent 25%),
+                linear-gradient(-45deg, #3CA144 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #3CA144 75%),
+                linear-gradient(-45deg, transparent 75%, #3CA144 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .game-header {
+            background: #F5F5F5;
+            border: 4px solid #2C4F1E;
+            border-radius: 25px;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-title {
+            color: #101142; 
+            font-size: 4.5em; 
+            margin-bottom: 5px;
+            font-family: 'Patrick Hand', cursive;
+            letter-spacing: 20px;
+            transform: rotate(-2deg); 
+            transition: transform 0.3s ease;
+        }
+
+        .game-title:hover {
+            transform: rotate(2deg);
+        }
+
+        .game-area {
+            background: #F5F5F5;
+            border: 4px solid #2C4F1E;
+            border-radius: 10px;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats-panel {
+            display: flex;
+            justify-content: space-around;
+            background: #F5F5F5;
+            border: 4px solid #2C4F1E;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 1.2em;
+        }
+
+        .stat-item {
+            background: #E8F5E9;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 2px solid #2C4F1E;
+            color: #2C4F1E;
+            font-weight: normal;
+        }
+
+        .input-area {
+            background: #F5F5F5;
+            border: 4px solid #2C4F1E;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        input {
+            width: 80%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #2C4F1E;
+            border-radius: 5px;
+            background: #E8F5E9;
+            color: #2C4F1E;
+            text-align: center;
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        input::placeholder {
+            font-family: 'Patrick Hand', cursive;
+            color: #2C4F1E;
+            opacity: 0.7;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #43B54C;
+            box-shadow: 0 0 5px #43B54C;
+        }
+
+        .word {
+            position: absolute;
+            background: #E8F5E9;
+            border: 2px solid #2C4F1E;
+            border-radius: 5px;
+            padding: 8px 16px;
+            color: #2C4F1E;
+            font-weight: normal;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 1.2em;
+        }
+
+        .overlay-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #F5F5F5;
+            border: 4px solid #2C4F1E;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            font-size: 1.2em;
+        }
+
+        .btn {
+            background: #43B54C;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 24px;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease;
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        .btn:hover {
+            background: #3CA144;
+        }
+
+        .coin {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #FFD700, #FFA500); /* Gold gradient */
+            border: 2px solid #B8860B;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .coin::after {
+            content: '$';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #B8860B;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-header">
+            <h1 class="game-title">TYPING ROYALE</h1>
+        </div>
+
+        <div id="menu" class="overlay-screen">
+            <h2>Welcome iSkolar!</h2>
+            <p>Type the words to catch them all!</p>
+            <button class="btn" onclick="startGame()">Start Game</button>
+        </div>
+
+        <div id="gameContent" style="display: none;">
+            <div class="stats-panel">
+                <div class="stat-item">Score: <span id="score">0</span></div>
+                <div class="stat-item">Speed: <span id="speed">1.0</span>x</div>
+                <div class="stat-item">Words Caught: <span id="wordsCaught">0</span></div>
+            </div>
+
+            <div class="game-area" id="gameArea">
+                <div id="gameOver" class="overlay-screen" style="display: none;">
+                    <h2>Game Over!</h2>
+                    <p>Final Score: <span id="finalScore">0</span></p>
+                    <button class="btn" onclick="restartGame()">Try Again</button>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="wordInput" placeholder="Type here to catch words..." autocomplete="off">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const words = [
+                'rune', 'kernel', 'compiler', 'fade', 'blaze',  
+                'pyro', 'algorithm', 'phantom', 'sage', 'mana',  
+                'spirit', 'breach', 'omen', 'protocol', 'enchanter',  
+                'encryption', 'mystic', 'shadow', 'cache', 'ember',  
+                'server', 'jett', 'alchemy', 'spectre', 'database',  
+                'arcane', 'python', 'vandal', 'network', 'packet',  
+                'malware', 'neural', 'glyph', 'aether', 'processor',  
+                'yoru', 'skye', 'neon', 'prism', 'binary',  
+                'debug', 'magic', 'harbor', 'golem', 'cypher',  
+                'sova', 'cypher', 'viper', 'agent', 'killjoy',
+                
+        ];
+
+        let score = 0;
+        let speed = 1;
+        let wordsCaught = 0;
+        let activeWords = [];
+        let gameInterval;
+        let spawnInterval;
+        let isGameOver = false;
+
+        function startGame() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('gameContent').style.display = 'block';
+            document.getElementById('wordInput').focus();
+            initGame();
+        }
+
+        function initGame() {
+            score = 0;
+            speed = 1;
+            wordsCaught = 0;
+            activeWords = [];
+            isGameOver = false;
+            updateStats();
+            
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('wordInput').value = '';
+            
+            startSpawning();
+            startGameLoop();
+            addDecorations();
+        }
+
+        function addDecorations() {
+            const gameArea = document.getElementById('gameArea');
+            for (let i = 0; i < 5; i++) {
+                const coin = document.createElement('div');
+                coin.className = 'coin';
+                coin.style.left = `${Math.random() * (gameArea.offsetWidth - 40)}px`;
+                coin.style.top = `${Math.random() * (gameArea.offsetHeight - 40)}px`;
+                gameArea.appendChild(coin);
+            }
+        }
+
+        function startSpawning() {
+            spawnInterval = setInterval(() => {
+                if (!isGameOver) spawnWord();
+            }, 2000);
+        }
+
+        function startGameLoop() {
+            gameInterval = setInterval(updateGame, 16);
+        }
+
+        function spawnWord() {
+            const word = words[Math.floor(Math.random() * words.length)];
+            const gameArea = document.getElementById('gameArea');
+            const wordElement = document.createElement('div');
+            
+            wordElement.className = 'word';
+            wordElement.textContent = word;
+            wordElement.style.left = `${Math.random() * (gameArea.offsetWidth - 100)}px`;
+            wordElement.style.top = '0px';
+            
+            gameArea.appendChild(wordElement);
+            
+            activeWords.push({
+                element: wordElement,
+                word: word,
+                top: 0
+            });
+        }
+
+        function updateGame() {
+            const gameArea = document.getElementById('gameArea');
+            const bottomLimit = gameArea.offsetHeight;
+            
+            activeWords.forEach(wordObj => {
+                wordObj.top += speed;
+                wordObj.element.style.top = `${wordObj.top}px`;
+                
+                if (wordObj.top > bottomLimit) {
+                    gameOver();
+                }
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('speed').textContent = speed.toFixed(1);
+            document.getElementById('wordsCaught').textContent = wordsCaught;
+        }
+
+        function gameOver() {
+            isGameOver = true;
+            document.getElementById('gameOver').style.display = 'block';
+            stopGame();
+        }
+
+        function stopGame() {
+            clearInterval(gameInterval);
+            clearInterval(spawnInterval);
+            activeWords.forEach(wordObj => {
+                wordObj.element.remove();
+            });
+            activeWords = [];
+        }
+
+        function restartGame() {
+            stopGame();
+            initGame();
+        }
+
+        document.getElementById('wordInput').addEventListener('input', (e) => {
+            const input = e.target.value.toLowerCase();
+            
+            for (let i = 0; i < activeWords.length; i++) {
+                if (activeWords[i].word === input) {
+                    activeWords[i].element.remove();
+                    activeWords.splice(i, 1);
+                    score += 10;
+                    wordsCaught++;
+                    speed += 0.1;
+                    updateStats();
+                    e.target.value = '';
+                    break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
