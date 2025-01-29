@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chill Typing</title>
+    <title>Typing Royale</title>
     <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
     <style>
         @font-face {
@@ -59,6 +59,135 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #F8FAFC;
+            border: 8px solid #213555;
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -60%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #213555;
+            font-family: 'Minecraft', cursive;
+        }
+
+        .close-modal:hover {
+            color: #4a6491;
+        }
+
+        .leaderboard {
+            padding: 15px;
+        }
+
+        .leaderboard h2 {
+            color: #213555;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Minecraft', cursive;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Minecraft', cursive;
+        }
+
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 2px solid #213555;
+        }
+
+        .leaderboard-table th {
+            background-color: #CBDCEB;
+            color: #213555;
+        }
+
+        .leaderboard-table tr:nth-child(even) {
+            background-color: #f2f7ff;
+        }
+
+        .leaderboard-table tr:hover {
+            background-color: #e6eeff;
+        }
+
+        .player-name-input {
+            width: 200px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: 'Minecraft', cursive;
+            border: 2px solid #213555;
+            border-radius: 5px;
+        }
+
+        .leaderboard-btn {
+            background: #F5F5F5;
+            border: 4px solid #213555;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-family: 'Minecraft', cursive;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 1.2em;
+        }
+
+        .leaderboard-btn:hover {
+            background: #CBDCEB;
+        }
+
+        .stat-item.high-score {
+            background: #F5F5F5;
+        }
+
         .stats-panel {
             display: flex;
             justify-content: space-around;
@@ -83,6 +212,15 @@
             padding: 20px;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-area {
+            background: #00000000;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px; 
         }
 
         .audio-controls {
@@ -228,7 +366,7 @@
 <body>
     <div class="container">
         <div class="game-header">
-            <h1 class="game-title">CHILL TYPING</h1>
+            <h1 class="game-title">TYPING ROYALE</h1>
         </div>
 
         <div id="menu" class="overlay-screen">
@@ -240,6 +378,7 @@
         <div id="gameContent" style="display: none;">
             <div class="stats-panel">
                 <div class="stat-item">Score: <span id="score">0</span></div>
+                <div class="stat-item high-score">High Score: <span id="highScore">0</span></div>
                 <div class="stat-item">Speed: <span id="speed">1.0</span>x</div>
                 <div class="stat-item">Words Caught: <span id="wordsCaught">0</span></div>
             </div>
@@ -248,14 +387,41 @@
                 <div id="gameOver" class="overlay-screen" style="display: none;">
                     <h2>Game Over!</h2>
                     <p>Final Score: <span id="finalScore">0</span></p>
+                    <input type="text" id="playerName" class="player-name-input" placeholder="Enter your name" maxlength="15">
+                    <button class="btn" onclick="saveScore()">Save Score</button>
                     <button class="btn" onclick="restartGame()">Try Again</button>
                 </div>
             </div>
 
             <div class="input-area">
                 <input type="text" id="wordInput" placeholder="Type here to catch words..." autocomplete="off">
+                <button class="leaderboard-btn" onclick="openLeaderboard()">📊 Leaderboard</button>
             </div>
         </div>
+
+        <div id="leaderboardModal" class="modal">
+            <div class="modal-content">
+                <button class="close-modal" onclick="closeLeaderboard()">×</button>
+                <div class="leaderboard">
+                    <h2>🏆 Top Scores 🏆</h2>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <button class="leaderboard-btn" onclick="openLeaderboard()">📊 Leaderboard</button>
+
         <div class="audio-controls">
             <button class="mute-btn" id="muteButton">🔊</button>
             <input type="range" class="volume-slider" id="volumeControl" min="0" max="1" step="0.1" value="0.5">
@@ -265,24 +431,35 @@
 
     <script>
 
+        let highScore = parseInt(localStorage.getItem('highScore')) || 0;
+        const leaderboardData = JSON.parse(localStorage.getItem('leaderboard')) || [];
+
         const wordLists = {
             short: [
-                'cat', 'dog', 'run', 'jump', 'play', 'walk', 'talk', 'read', 'write', 'code', 
+                'cat', 'dog', 'run', 'jump', 'play', 'walk', 'talk', 'read', 'write', 'code',
                 'mind', 'time', 'life', 'work', 'rest', 'flow', 'game', 'type', 'word', 'fast',
-                'light', 'dark', 'fire', 'wind', 'love', 'hope', 'calm', 'move', 'open', 'close'
+                'light', 'dark', 'fire', 'wind', 'love', 'hope', 'calm', 'move', 'open', 'close',
+                'bits', 'bytes', 'data', 'web', 'net', 'hack', 'bug', 'fix', 'log', 'key', 'file',
+                'app', 'pyro', 'sage', 'mana', 'blaze', 'ember', 'cloud', 'sun', 'state', 'rush', 'play', 'point',
+                'aim', 'jinx', 'ping', 'game', 'buff', 'ban', 'peek', 'pick', 'ban', 'smoke', 'flank', 'stun'
             ],
             medium: [
                 'python', 'coding', 'server', 'design', 'stream', 'coffee', 'system', 'method',
                 'string', 'number', 'random', 'battle', 'player', 'garden', 'window', 'typing',
                 'screen', 'editor', 'syntax', 'script', 'laptop', 'cursor', 'binary', 'output',
-                'backup', 'vector', 'matrix', 'network', 'packet', 'memory'
+                'backup', 'vector', 'matrix', 'network', 'packet', 'memory', 'cache', 'malware',
+                'science', 'algorithm', 'phantom', 'spirit', 'breach', 'omen', 'protocol', 'enchanter', 'mystic', 
+                'illusion', 'enigma', 'chaos', 'harmony', 'discord', 'synergy', 'evolution', 'summoner', 'armor', 'jungle'
             ],
             long: [
                 'algorithm', 'developer', 'interface', 'database', 'function', 'variable',
                 'keyboard', 'computer', 'internet', 'software', 'hardware', 'graphics',
                 'animation', 'programming', 'framework', 'frontend', 'backend', 'fullstack',
                 'language', 'terminal', 'encryption', 'repository', 'artificial', 'intelligence',
-                'optimization', 'architecture', 'authentication', 'visualization', 'debugging', 'scalability'
+                'optimization', 'architecture', 'authentication', 'visualization', 'debugging', 'scalability',
+                'compiler', 'protocol', 'database', 'processor', 'application', 'enchantment', 'spectre', 'vandal', 'alchemy', 
+                'aether', 'neural', 'glyph', 'aura', 'paradox', 'illusion', 'oracle', 'sorcery', 'prism', 'viper', 'sova', 
+                'cypher', 'phoenix', 'griffin', 'wizard', 'witch', 'oracle', 'void', 'anomaly', 'encryption', 'summoner'
             ]
         };
 
@@ -338,9 +515,12 @@
             activeWords = [];
             isGameOver = false;
             updateStats();
+            updateLeaderboard();
             
             document.getElementById('gameOver').style.display = 'none';
             document.getElementById('wordInput').value = '';
+            document.getElementById('playerName').value = '';
+            document.querySelector('#gameOver .btn:first-of-type').style.display = 'inline-block';
             
             startSpawning();
             startGameLoop();
@@ -443,6 +623,76 @@
             }
         });
 
+        function openLeaderboard() {
+            document.getElementById('leaderboardModal').style.display = 'block';
+            updateLeaderboard();
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboardModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('leaderboardModal');
+            if (event.target === modal) {
+                closeLeaderboard();
+            }
+        }
+
+        function updateHighScore() {
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('highScore', highScore);
+            }
+            document.getElementById('highScore').textContent = highScore;
+        }
+
+        function saveScore() {
+            const playerName = document.getElementById('playerName').value.trim() || 'Anonymous';
+            const newScore = {
+                name: playerName,
+                score: score,
+                date: new Date().toLocaleDateString()
+            };
+            
+            leaderboardData.push(newScore);
+            leaderboardData.sort((a, b) => b.score - a.score);
+            
+            while (leaderboardData.length > 10) {
+                leaderboardData.pop();
+            }
+            
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboardData));
+
+            document.querySelector('#gameOver .btn:first-of-type').style.display = 'none';
+            openLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            leaderboardBody.innerHTML = '';
+            
+            leaderboardData.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${entry.name}</td>
+                    <td>${entry.score}</td>
+                    <td>${entry.date}</td>
+                `;
+                leaderboardBody.appendChild(row);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('speed').textContent = speed.toFixed(1);
+            document.getElementById('wordsCaught').textContent = wordsCaught;
+            updateHighScore();
+        }
+
+
         function gameOver() {
             isGameOver = true;
             document.getElementById('gameOver').style.display = 'block';
@@ -460,6 +710,19 @@
         }
 
         document.addEventListener('DOMContentLoaded', initAudio);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initAudio();
+            updateLeaderboard();
+            document.getElementById('highScore').textContent = highScore;
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeLeaderboard();
+            }
+        });
+
     </script>
 </body>
 </html>
