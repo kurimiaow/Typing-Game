@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< Updated upstream
     <title>Typing Game</title>
+=======
+    <title>Typing Royale</title>
+>>>>>>> Stashed changes
     <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
     <style>
 
@@ -218,6 +222,7 @@
     </div>
 
     <script>
+<<<<<<< Updated upstream
         const words = [
                 'rune', 'kernel', 'compiler', 'fade', 'blaze',  
                 'pyro', 'algorithm', 'phantom', 'sage', 'mana',  
@@ -246,6 +251,60 @@
                 'ping', 'flank', 'console', 'loot', 'stun', 'camp'
                 
         ];
+=======
+
+        const wordLists = {
+            short: [
+                'cat', 'dog', 'run', 'jump', 'play', 'walk', 'talk', 'read', 'write', 'code', 
+                'mind', 'time', 'life', 'work', 'rest', 'flow', 'game', 'type', 'word', 'fast',
+                'light', 'dark', 'fire', 'wind', 'love', 'hope', 'calm', 'move', 'open', 'close',
+                'bits', 'bytes', 'data', 'web', 'net', 'hack', 'bug', 'fix', 'log', 'key', 'file',
+                'app'
+
+                
+            ],
+            medium: [
+                'python', 'coding', 'server', 'design', 'stream', 'coffee', 'system', 'method',
+                'string', 'number', 'random', 'battle', 'player', 'garden', 'window', 'typing',
+                'screen', 'editor', 'syntax', 'script', 'laptop', 'cursor', 'binary', 'output',
+                'backup', 'vector', 'matrix', 'network', 'packet', 'memory', 'cache', 'packet',
+                'malware', 'science', 
+            ],
+            long: [
+                'algorithm', 'developer', 'interface', 'database', 'function', 'variable',
+                'keyboard', 'computer', 'internet', 'software', 'hardware', 'graphics',
+                'animation', 'programming', 'framework', 'frontend', 'backend', 'fullstack',
+                'language', 'terminal', 'encryption', 'repository', 'artificial', 'intelligence',
+                'optimization', 'architecture', 'authentication', 'visualization', 'debugging', 'scalability',
+                'compiler', 'protocol', 'database', 'processor', 'application'
+            ]
+        };
+
+        const backgroundMusic = new Audio('bgm.mp3');
+        const successSound = new Audio('success.mp3'); 
+        
+        backgroundMusic.loop = true;
+        let isMuted = false;
+
+        function initAudio() {
+            const volumeControl = document.getElementById('volumeControl');
+            const muteButton = document.getElementById('muteButton');
+
+            volumeControl.addEventListener('input', (e) => {
+                const volume = parseFloat(e.target.value);
+                backgroundMusic.volume = volume;
+                successSound.volume = volume;
+            });
+
+            muteButton.addEventListener('click', () => {
+                isMuted = !isMuted;
+                backgroundMusic.muted = isMuted;
+                successSound.muted = isMuted;
+                muteButton.textContent = isMuted ? '🔇' : '🔊';
+            });
+        }
+
+>>>>>>> Stashed changes
 
         let score = 0;
         let speed = 1;
